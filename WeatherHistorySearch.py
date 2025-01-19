@@ -1,31 +1,41 @@
 import requests
 from bs4 import BeautifulSoup
 
-url = 'https://www.data.jma.go.jp/stats/etrn/view/daily_a1.php?prec_no=44&block_no=1001&year=2024&month=3&day=15&view='
-response = requests.get(url)
-response.encoding = response.apparent_encoding 
+# 日付指定定義
+dates = [
+    {'year': 2024, 'month': 3, 'day': 15},
+    {'year': 2023, 'month': 3, 'day': 15},
+]
 
-# レスポンスの HTML から BeautifulSoup オブジェクトを作る
-soup = BeautifulSoup(response.text, 'html.parser')
-
-# <tr>タグの文字列を取得する
-# <tr class="mtx" style="text-align:right;">
-rows = soup.find_all('tr', {'class': 'mtx', 'style': 'text-align:right;'})
+# 場所定義
+prec_no = 44
+block_no = 1001
 
 
-# 指定の日付
-target_day = '15'
+results = ["日付,降水量,平均気温,最高気温,最低気温\n"]
 
-# title タグの文字列を取得する
-target_row = soup.find('a', string=target_day).find_parent('tr')
+for date in dates:
+    # urlの設定
+    url = f"https://www.data.jma.go.jp/stats/etrn/view/daily_a1.php?prec_no={prec_no}&block_no={block_no}&year={date['year']}&month={date['month']}&day={date['day']}&view="
 
-if target_row:
-    values = [td.text.strip() for td in target_row.find_all('td')]
+    response = requests.get(url)
+    response.encoding = response.apparent_encoding 
 
-    result = f"{values[0]}日, {values[1]}mm, {values[4]}℃, {values[5]}℃, {values[6]}℃"
+    # BeautifulSoup オブジェクトを作る
+    soup = BeautifulSoup(response.text, 'html.parser')
 
-    print(result)
+    target_row = soup.find('a', string=date['day'])
+    target_row = target_row.find_parent('tr') if target_row else None
 
-    #     # テキストファイルに保存する
-    # with open('WeatherHistorySearchSoup.html', 'w', encoding='utf-8') as file:
-    #     file.write(str(result))
+    if target_row:
+        values = [td.text.strip() for td in target_row.find_all('td')]
+
+        result = f"{date['year']}/{date['month']}/{date['day']}: {values[1]}mm, {values[4]}℃, {values[5]}℃, {values[6]}℃\n"
+        results.append(result)
+
+# テキストファイルに保存
+with open('WeatherHistorySearch.txt', 'w', encoding='utf-8') as file:
+    file.writelines(results)
+
+# 出力
+print("".join(results))
