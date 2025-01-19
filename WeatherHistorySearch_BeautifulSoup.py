@@ -1,18 +1,12 @@
 from bs4 import BeautifulSoup
 
 # HTMLデータの読み込み
-html_file = 'WeatherHistorySearch.html'  # 保存したHTMLファイル名
+html_file = 'WeatherHistorySearch.html'
 with open(html_file, 'r', encoding='utf-8') as file:
     html_data = file.read()
 
-
 # レスポンスの HTML から BeautifulSoup オブジェクトを作る
 soup = BeautifulSoup(html_data, 'html.parser')
-
-# <tr>タグの文字列を取得する
-# <tr class="mtx" style="text-align:right;">
-rows = soup.find_all('tr', {'class': 'mtx', 'style': 'text-align:right;'})
-
 
 # 指定の日付
 target_day = '15'
@@ -28,5 +22,5 @@ if target_row:
     print(result)
 
         # テキストファイルに保存する
-    with open('WeatherHistorySearchSoup.html', 'w', encoding='utf-8') as file:
+    with open('WeatherHistorySearchSoup.txt', 'w', encoding='utf-8') as file:
         file.write(str(result))

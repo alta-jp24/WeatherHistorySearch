@@ -24,13 +24,13 @@ for date in dates:
     # BeautifulSoup オブジェクトを作る
     soup = BeautifulSoup(response.text, 'html.parser')
 
-    target_row = soup.find('a', string=date['day'])
+    target_row = soup.find('a', string=str(date['day']))
     target_row = target_row.find_parent('tr') if target_row else None
 
     if target_row:
         values = [td.text.strip() for td in target_row.find_all('td')]
 
-        result = f"{date['year']}/{date['month']}/{date['day']}: {values[1]}mm, {values[4]}℃, {values[5]}℃, {values[6]}℃\n"
+        result = f"{date['year']}/{date['month']}/{date['day']},{values[1]},{values[4]},{values[5]},{values[6]}\n"
         results.append(result)
 
 # テキストファイルに保存

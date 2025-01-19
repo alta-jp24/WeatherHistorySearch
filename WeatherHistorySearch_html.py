@@ -4,6 +4,6 @@ url = 'https://www.data.jma.go.jp/stats/etrn/view/daily_a1.php?prec_no=44&block_
 response = requests.get(url)
 response.encoding = response.apparent_encoding 
 
-# テキストファイルに保存する
+# HTMLファイルに保存する
 with open('WeatherHistorySearch.html', 'w', encoding='utf-8') as file:
     file.write(response.text)
